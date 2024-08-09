@@ -10,7 +10,6 @@ use crate::rule_segmenter::*;
 use alloc::string::String;
 use alloc::vec;
 use alloc::vec::Vec;
-use core::str::CharIndices;
 use icu_provider::prelude::*;
 use utf8_iter::Utf8CharIndices;
 
@@ -376,10 +375,13 @@ impl WordSegmenter {
     /// Creates a word break iterator for an `str` (a UTF-8 string).
     ///
     /// There are always breakpoints at 0 and the string length, or only at 0 for the empty string.
-    pub fn segment_str<'l, 's>(&'l self, input: &'s str) -> WordBreakIteratorUtf8<'l, 's> {
+    pub fn segment_str<'l, 's>(
+        &'l self,
+        input: ropey::iter::Chars<'s>,
+    ) -> WordBreakIteratorUtf8<'l, 's> {
         WordBreakIterator(RuleBreakIterator {
-            iter: input.char_indices(),
             len: input.len(),
+            iter: input.enumerate(),
             current_pos_data: None,
             result_cache: Vec::new(),
             data: self.payload.get(),
@@ -443,7 +445,7 @@ impl WordSegmenter {
 pub struct WordBreakTypeUtf8;
 
 impl<'l, 's> RuleBreakType<'l, 's> for WordBreakTypeUtf8 {
-    type IterAttr = CharIndices<'s>;
+    type IterAttr = core::iter::Enumerate<ropey::iter::Chars<'s>>;
     type CharType = char;
 
     fn get_current_position_character_len(iter: &RuleBreakIterator<Self>) -> usize {

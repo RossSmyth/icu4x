@@ -29,7 +29,7 @@ zerovec = { workspace = true, features = ["yoke"] }
 
 databake = { workspace = true, optional = true, features = ["derive"] }
 serde = { workspace = true, features = ["derive", "alloc"], optional = true }
-
+ropey = "1.6.1"
 core_maths = { workspace = true, optional = true }
 
 icu_segmenter_data = { workspace = true, optional = true }
